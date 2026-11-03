@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Löneberäkning">
-    <title>Rich Löneberäkning v2027.9.1</title>
+    <title>Rich Löneberäkning v2027.9.2</title>
     <style>
         :root {
             --bg-body: #0f172a;
@@ -297,7 +297,7 @@
             <div class="logo-icon">kr</div>
             <div class="header-text">
                 <h1>Rich Löneberäkning</h1>
-                <p>v2027.9.1 (Tabell 32 Auto)</p>
+                <p>v2027.9.2 (Tabell 32 Auto)</p>
             </div>
         </div>
     </header>
@@ -313,4 +313,232 @@
                 <div class="summary-row"><span>Övertidstillägg:</span><span id="sumOT" style="color:var(--amber);">+ 0 kr</span></div>
                 <div class="summary-row"><span>Beredskapstillägg:</span><span id="sumSB" style="color:var(--indigo);">+ 0 kr</span></div>
                 <div class="summary-row"><span>Sjukavdrag:</span><span id="sumSick" style="color:var(--rose);">- 0 kr</span></div>
-                <div class="summary-row total"><span>Br
+                <div class="summary-row total"><span>Bruttolön:</span><span id="grossSalary">0 kr</span></div>
+                <div class="summary-row" style="font-size:12px;"><span>Skatt (<span id="taxRateLabel">0.0%</span>):</span><span id="taxDeduction" style="color:var(--rose);">- 0 kr</span></div>
+            </div>
+            <div>
+                <div class="bar-chart">
+                    <div id="barNet" class="bar-segment bg-net" style="width: 67%;"></div>
+                    <div id="barTax" class="bar-segment bg-tax" style="width: 33%;"></div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-dot bg-net"></div> Netto</div>
+                    <div class="legend-item"><div class="legend-dot bg-tax"></div> Skatt</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>💰 Grundlön & Skatt</span>
+                <button id="resetTaxBtn" class="btn-reset" onclick="resetToAutoTax()" style="display:none;">Återställ till Tabell 32</button>
+            </div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label for="monthlySalary">Månadslön (kr)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="monthlySalary" value="48922" inputmode="decimal">
+                        <span class="unit">kr</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="taxRate">Skatt: <strong id="taxVal">0.0%</strong><span id="modeTag" class="auto-tag">Tabell 32</span></label>
+                    <input type="range" id="taxRate" min="15" max="50" step="0.5" value="23.5" style="margin-top:12px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">⏰ Övertid</div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label for="ot1">Fall 1 (ML / 94)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="ot1" value="0" min="0" step="0.5" inputmode="decimal">
+                        <span class="unit">tim</span>
+                    </div>
+                    <div class="rate-hint" id="ot1Rate">0 kr/t</div>
+                </div>
+                <div class="input-group">
+                    <label for="ot2">Fall 2 (ML / 72)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="ot2" value="0" min="0" step="0.5" inputmode="decimal">
+                        <span class="unit">tim</span>
+                    </div>
+                    <div class="rate-hint" id="ot2Rate">0 kr/t</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">🛡️ Beredskap</div>
+            <div class="grid-3">
+                <div class="input-group">
+                    <label for="sb1">Steg 1 (ML/1400)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="sb1" value="74" min="0" step="0.5" inputmode="decimal">
+                        <span class="unit">t</span>
+                    </div>
+                    <div class="rate-hint" id="sb1Rate">0 kr/t</div>
+                </div>
+                <div class="input-group">
+                    <label for="sb2">Steg 2 (ML/650)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="sb2" value="54" min="0" step="0.5" inputmode="decimal">
+                        <span class="unit">t</span>
+                    </div>
+                    <div class="rate-hint" id="sb2Rate">0 kr/t</div>
+                </div>
+                <div class="input-group">
+                    <label for="sb3">Steg 3 (ML/320)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="sb3" value="0" min="0" step="0.5" inputmode="decimal">
+                        <span class="unit">t</span>
+                    </div>
+                    <div class="rate-hint" id="sb3Rate">0 kr/t</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">🏥 Sjukdom</div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label for="sick1">Dag 1 (Karens)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="sick1" value="0" min="0" step="1" inputmode="decimal">
+                        <span class="unit">tim</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="sick2">Dag 2-14 (80%)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="sick2" value="0" min="0" step="1" inputmode="decimal">
+                        <span class="unit">tim</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-calc" onclick="calculate()">🧮 Beräkna Lön</button>
+    </div>
+
+    <script>
+        var isManualTax = false;
+
+        function getVal(id) {
+            var el = document.getElementById(id);
+            if (!el) return 0;
+            var val = parseFloat(el.value);
+            return isNaN(val) ? 0 : val;
+        }
+
+        function formatKr(amount) {
+            return Math.round(amount).toLocaleString('sv-SE') + ' kr';
+        }
+
+        function getTabell32Skatt(gross) {
+            if (gross <= 2000) return 0;
+            if (gross <= 25000) return Math.round(150 + (gross - 2000) * 0.1884);
+            if (gross <= 30000) return Math.round(4484 + (gross - 25000) * 0.2438);
+            if (gross <= 40000) return Math.round(5703 + (gross - 30000) * 0.2448);
+            if (gross <= 55000) return Math.round(8151 + (gross - 40000) * 0.3200);
+            return Math.round(12951 + (gross - 55000) * 0.5200);
+        }
+
+        function resetToAutoTax() {
+            isManualTax = false;
+            document.getElementById('resetTaxBtn').style.display = 'none';
+            document.getElementById('modeTag').innerText = 'Tabell 32';
+            document.getElementById('modeTag').style.background = 'rgba(2, 132, 199, 0.2)';
+            document.getElementById('modeTag').style.color = 'var(--primary)';
+            calculate();
+        }
+
+        function calculate() {
+            var ml = getVal('monthlySalary');
+            var ot1 = getVal('ot1');
+            var ot2 = getVal('ot2');
+            var sb1 = getVal('sb1');
+            var sb2 = getVal('sb2');
+            var sb3 = getVal('sb3');
+            var sick1 = getVal('sick1');
+            var sick2 = getVal('sick2');
+
+            var ot1R = ml > 0 ? ml / 94 : 0;
+            var ot2R = ml > 0 ? ml / 72 : 0;
+            var sb1R = ml > 0 ? ml / 1400 : 0;
+            var sb2R = ml > 0 ? ml / 650 : 0;
+            var sb3R = ml > 0 ? ml / 320 : 0;
+
+            document.getElementById('ot1Rate').innerText = ot1R.toFixed(2) + ' kr/t';
+            document.getElementById('ot2Rate').innerText = ot2R.toFixed(2) + ' kr/t';
+            document.getElementById('sb1Rate').innerText = sb1R.toFixed(2) + ' kr/t';
+            document.getElementById('sb2Rate').innerText = sb2R.toFixed(2) + ' kr/t';
+            document.getElementById('sb3Rate').innerText = sb3R.toFixed(2) + ' kr/t';
+
+            var otTotal = (ot1 * ot1R) + (ot2 * ot2R);
+            var sbTotal = (sb1 * sb1R) + (sb2 * sb2R) + (sb3 * sb3R);
+            
+            var hourlyDeduction = ml > 0 ? ml / 160 : 0;
+            var sickTotal = (sick1 * hourlyDeduction) + (sick2 * (hourlyDeduction * 0.20));
+
+            var gross = Math.max(0, ml + otTotal + sbTotal - sickTotal);
+            
+            var tax = 0;
+            var taxRatePct = 0;
+
+            if (!isManualTax) {
+                tax = getTabell32Skatt(gross);
+                taxRatePct = gross > 0 ? (tax / gross) * 100 : 0;
+                document.getElementById('taxRate').value = taxRatePct.toFixed(1);
+            } else {
+                taxRatePct = getVal('taxRate');
+                tax = gross * (taxRatePct / 100);
+            }
+
+            var net = Math.max(0, gross - tax);
+
+            document.getElementById('taxVal').innerText = taxRatePct.toFixed(1) + '%';
+            document.getElementById('taxRateLabel').innerText = taxRatePct.toFixed(1) + '%';
+            
+            document.getElementById('netSalary').innerText = formatKr(net);
+            document.getElementById('sumBase').innerText = formatKr(ml);
+            document.getElementById('sumOT').innerText = '+ ' + formatKr(otTotal);
+            document.getElementById('sumSB').innerText = '+ ' + formatKr(sbTotal);
+            document.getElementById('sumSick').innerText = '- ' + formatKr(sickTotal);
+            document.getElementById('grossSalary').innerText = formatKr(gross);
+            document.getElementById('taxDeduction').innerText = '- ' + formatKr(tax);
+
+            if (gross > 0) {
+                var netPct = (net / gross) * 100;
+                var taxPct = (tax / gross) * 100;
+                document.getElementById('barNet').style.width = netPct + '%';
+                document.getElementById('barTax').style.width = taxPct + '%';
+            }
+        }
+
+        document.getElementById('taxRate').addEventListener('input', function() {
+            isManualTax = true;
+            document.getElementById('resetTaxBtn').style.display = 'inline-block';
+            document.getElementById('modeTag').innerText = 'Manuell';
+            document.getElementById('modeTag').style.background = 'rgba(245, 158, 11, 0.2)';
+            document.getElementById('modeTag').style.color = 'var(--amber)';
+            calculate();
+        });
+
+        var fieldIds = ['monthlySalary', 'ot1', 'ot2', 'sb1', 'sb2', 'sb3', 'sick1', 'sick2'];
+        for (var i = 0; i < fieldIds.length; i++) {
+            var el = document.getElementById(fieldIds[i]);
+            if (el) {
+                el.addEventListener('input', calculate);
+                el.addEventListener('change', calculate);
+                el.addEventListener('keyup', calculate);
+            }
+        }
+
+        window.onload = function() { calculate(); };
+        calculate();
+    </script>
+</body>
+</html>
