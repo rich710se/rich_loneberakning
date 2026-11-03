@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Löneberäkning">
-    <title>Rich Löneberäkning v2027.9</title>
+    <title>Rich Löneberäkning v2027.9.1</title>
     <style>
         :root {
             --bg-body: #0f172a;
@@ -225,3 +225,92 @@
             font-weight: 700;
             font-size: 15px;
             cursor: pointer;
+        }
+
+        .btn-calc {
+            background-color: var(--emerald);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-reset {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .bar-chart {
+            display: flex;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+            background-color: var(--border-color);
+        }
+
+        .bar-segment {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .bg-net { background-color: var(--emerald); }
+        .bg-tax { background-color: var(--rose); }
+
+        .legend {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 8px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .auto-tag {
+            font-size: 10px;
+            background: rgba(2, 132, 199, 0.2);
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">
+            <div class="logo-icon">kr</div>
+            <div class="header-text">
+                <h1>Rich Löneberäkning</h1>
+                <p>v2027.9.1 (Tabell 32 Auto)</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="result-box">
+                <div class="result-title">Lön efter skatt (Nettolön)</div>
+                <div class="result-amount" id="netSalary">0 kr</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:2px;">
+                <div class="summary-row"><span>Månadslön:</span><span id="sumBase">0 kr</span></div>
+                <div class="summary-row"><span>Övertidstillägg:</span><span id="sumOT" style="color:var(--amber);">+ 0 kr</span></div>
+                <div class="summary-row"><span>Beredskapstillägg:</span><span id="sumSB" style="color:var(--indigo);">+ 0 kr</span></div>
+                <div class="summary-row"><span>Sjukavdrag:</span><span id="sumSick" style="color:var(--rose);">- 0 kr</span></div>
+                <div class="summary-row total"><span>Br
